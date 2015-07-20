@@ -2,9 +2,9 @@
 
 /*
 ==========================================================
-	This software package is intended for use with 
-	ExpressionEngine.	ExpressionEngine is Copyright © 
-	2002-2009 EllisLab, Inc. 
+	This software package is intended for use with
+	ExpressionEngine.	ExpressionEngine is Copyright ï¿½
+	2002-2009 EllisLab, Inc.
 	http://ellislab.com/
 ==========================================================
 	THIS IS COPYRIGHTED SOFTWARE, All RIGHTS RESERVED.
@@ -15,36 +15,36 @@
 	Please do not distribute this software without written
 	consent from the author.
 ==========================================================
-	Purpose: 
+	Purpose:
 	- Helps change site preferences all in one handy panel
 ----------------------------------------------------------
-	Notes: 
+	Notes:
 	- None
 ==========================================================
 */
 
-class Deeploy_helper_mcp { 
+class Deeploy_helper_mcp {
 
-	var $version	= DEEPLOY_HELPER_VERSION; 
+	var $version	= DEEPLOY_HELPER_VERSION;
 
 	var $from_system_prefs = array('captcha_path', 'captcha_url', 'emoticon_path', 'theme_folder_path', 'theme_folder_url', 'site_url');
 	var $from_member_prefs = array('avatar_path', 'avatar_url', 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path', 'prv_msg_upload_path');
 	var $from_template_prefs = array('tmpl_file_basepath');
 	var $from_extension_prefs = array('file_path');  // for Low Variables currently
 
-	// ------------------------- 
-	//	constructor 
-	// ------------------------- 
-	function Deeploy_helper_mcp( $switch = TRUE ) 
-	{ 
+	// -------------------------
+	//	constructor
+	// -------------------------
+	function Deeploy_helper_mcp( $switch = TRUE )
+	{
 		$this->EE =& get_instance();
 		$this->EE->lang->loadfile('admin');
 		//$this->EE->lang->loadfile('publish_ad');
-	} 
-		 
-	// ------------------------------------------------------- 
+	}
+
+	// -------------------------------------------------------
 	// get settings that are useful to manage on one page
-	// ------------------------------------------------------- 
+	// -------------------------------------------------------
 	function get_config()
 	{
 		$this->EE->load->helper('string');
@@ -54,7 +54,7 @@ class Deeploy_helper_mcp {
 		// get site preferences and member preferences and template preferences
 		$this->EE->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
 		$this->EE->db->from('sites');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));	
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get();
 
 		if ($query->num_rows() > 0)
@@ -94,7 +94,7 @@ class Deeploy_helper_mcp {
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$this->EE->db->where('channel_name !=', '');
 		$query = $this->EE->db->get();
-	
+
 		if ($query->num_rows() > 0)
 		{
 			if (is_array($query->result_array()))
@@ -180,7 +180,7 @@ class Deeploy_helper_mcp {
 			}
 		}
 
-		
+
 		// get config.php
 		//$config_file = getcwd() . "/config.php";
 		$config_file = APPPATH . "config/config.php";
@@ -195,28 +195,28 @@ class Deeploy_helper_mcp {
 				}
 			}
 		}
-			
+
 		return $settings;
 	}
-	// end 
-		 
-	// ------------------------------------------------------- 
+	// end
+
+	// -------------------------------------------------------
 	// display a form containing a table containing all the settings we get
-	// ------------------------------------------------------- 
-	//function index($msg = '') 
-	function index($msg = '') 
-	{ 
+	// -------------------------------------------------------
+	//function index($msg = '')
+	function index($msg = '')
+	{
 
 		// we need to replace all $DSP with helpers: form helpers, html helpers, etc.
 		$this->EE->load->helper('url');
 		$this->EE->load->helper('form');
 		$this->EE->load->library('table');
-			 
-		//	html title and navigation crumblinks 
+
+		//	html title and navigation crumblinks
 
 		// vars are available as first-class variables in our view
 		$vars['cp_page_title'] = $this->EE->lang->line('deeploy_helper_module_name');
-		$vars['cp_heading'] = $this->EE->lang->line('deeploy_helper_menu');		
+		$vars['cp_heading'] = $this->EE->lang->line('deeploy_helper_menu');
 
 		// message, if any
 		$vars['message'] = $msg;
@@ -230,19 +230,19 @@ class Deeploy_helper_mcp {
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper'.AMP.'method=save';
 
 		// table header
-		$vars['table_heading1'] = array($this->EE->lang->line('quick_replace'),''); 
-		$vars['table_heading2'] = array($this->EE->lang->line('setting_name'), $this->EE->lang->line('setting_value')); 
+		$vars['table_heading1'] = array($this->EE->lang->line('quick_replace'),'');
+		$vars['table_heading2'] = array($this->EE->lang->line('setting_name'), $this->EE->lang->line('setting_value'));
 
 		$vars['table_rows'] = array();
-					
+
 		// generate table rows
 		foreach($this->get_config() as $section => $config)
 		{
 			$vars['table_rows'][] = array('section' => $section);
 
-			foreach($config as $meganame => $value) 
-			{ 
-				// for now, config.php and path.php are read only.  
+			foreach($config as $meganame => $value)
+			{
+				// for now, config.php and path.php are read only.
 				if (($section == $this->EE->lang->line('config_file')) || ($section == $this->EE->lang->line('path_file')))
 				{
 					$vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
@@ -260,24 +260,24 @@ class Deeploy_helper_mcp {
 						$vars['table_rows'][] = array('label' => $meganame, 'name' => $meganame, 'value' => $value);
 					}
 				}
-			}	 
+			}
 		}
 
 		return $this->EE->load->view('settings_form', $vars, TRUE);
-	} 
-	// end 
+	}
+	// end
 
-	// ------------------------------------------------------- 
+	// -------------------------------------------------------
 	// save settings submitted by the form.
-	// ------------------------------------------------------- 
-	function save() 
-	{ 
+	// -------------------------------------------------------
+	function save()
+	{
 		$this->EE->load->helper('string');
 
 		// get serialized site preferences and member preferences and template preferences
 		$this->EE->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
 		$this->EE->db->from('sites');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));	
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get();
 
 		if ($query->num_rows() > 0)
@@ -338,20 +338,20 @@ class Deeploy_helper_mcp {
 				$extension_changed = TRUE;
 			}
 		}
-			
+
 		if ($changed)
 		{
 			$system_prefs = base64_encode(serialize($this->EE->security->xss_clean($system_prefs)));
 			$member_prefs = base64_encode(serialize($this->EE->security->xss_clean($member_prefs)));
 			$template_prefs = base64_encode(serialize($this->EE->security->xss_clean($template_prefs)));
-		
+
 			// just in case we want to echo some debug output -- easier to read than base64
 			//$system_prefs = serialize($this->EE->security->xss_clean($system_prefs));
 			//$member_prefs = serialize($this->EE->security->xss_clean($member_prefs));
 			//$template_prefs = serialize($this->EE->security->xss_clean($template_prefs));
 
-			$updates[] = "UPDATE exp_sites set 
-				site_system_preferences = '$system_prefs', 
+			$updates[] = "UPDATE exp_sites set
+				site_system_preferences = '$system_prefs',
 				site_member_preferences = '$member_prefs',
 				site_template_preferences = '$template_prefs'
 				WHERE site_id = " . $this->EE->config->item('site_id');
@@ -384,25 +384,28 @@ class Deeploy_helper_mcp {
 				}
 			}
 			$extension_prefs = serialize($this->EE->security->xss_clean($working_array));
-		
+
 			$data =  array(
                'settings' => $extension_prefs
             );
 
 			$query = $this->EE->db->where('class', 'Low_variables_ext')
-				->update('exp_extensions', $data); 
+				->update('exp_extensions', $data);
 		}
 
 		foreach ($updates as $sql)
 		{
 			$this->EE->db->query($sql);
 		}
-		
-		return $this->index($this->EE->lang->line('settings_saved'));
-	}
-		 
 
-} 
+		//Do proper redirection + session message to inform of saved settings
+		// return $this->index($this->EE->lang->line('settings_saved'));
+		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('settings_saved'));
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper');
+	}
+
+
+}
 
 /* END Class */
 
