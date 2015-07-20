@@ -1,6 +1,6 @@
 <?php
 $config['name']='Deeploy Helper';
-$config['version']='2.2.0';
+$config['version']='2.2.1';
 $config['nsm_addon_updater']['versions_xml']='http://www.hopstudios.com/software/versions/deeploy_helper/';
 
 // Version constant
