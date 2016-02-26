@@ -9,7 +9,7 @@ Deeploy Helper is compatible with EE 2.8+. It probably also works with 2.7 all t
 
 If you want to use it, [please buy it](https://devot-ee.com/add-ons/deeploy-helper). :)
 
-[More information, how to use...](ee3/system/user/addons/limit_login/README.md)
+[More information, how to use...](ee3x/system/user/addons/deeploy_helper/README.md)
 
 Licence
 =======
