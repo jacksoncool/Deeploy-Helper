@@ -521,7 +521,6 @@ EOT;
 			$updates[] = "UPDATE exp_extensions SET settings = '" . $extension_prefs[$class] . "' WHERE class = '$class'";
 		}
 
-		//print_r($updates);
 		foreach ($updates as $sql)
 		{
 			$DB->query($sql);
