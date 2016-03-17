@@ -35,7 +35,7 @@ var $version = DEEPLOY_HELPER_VERSION;
 
 	function Deeploy_helper_upd()
 	{
-		$this->EE =& get_instance();
+		
 	}
 
 
@@ -52,7 +52,7 @@ var $version = DEEPLOY_HELPER_VERSION;
 			'has_publish_fields' => 'n'
 		);
 
-		$this->EE->db->insert('exp_modules', $data);
+		ee()->db->insert('exp_modules', $data);
 
 		return true; 
 	} 
@@ -64,17 +64,17 @@ var $version = DEEPLOY_HELPER_VERSION;
 	// ---------------------------------------- 
 	function uninstall() 
 	{ 
-		$this->EE->db->select('module_id');
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Deeploy_helper'));
+		ee()->db->select('module_id');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Deeploy_helper'));
 
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 
-		$this->EE->db->where('module_name', 'Deeploy_helper');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Deeploy_helper');
+		ee()->db->delete('modules');
 
-		$this->EE->db->where('class', 'Deeploy_helper');
-		$this->EE->db->delete('actions');
+		ee()->db->where('class', 'Deeploy_helper');
+		ee()->db->delete('actions');
 	
 
 		return true; 

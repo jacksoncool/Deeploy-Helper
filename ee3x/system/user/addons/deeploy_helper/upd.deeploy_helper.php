@@ -35,7 +35,7 @@ class Deeploy_helper_upd {
 
 	function Deeploy_helper_upd()
 	{
-		// ee() =& get_instance();
+		
 	}
 
 

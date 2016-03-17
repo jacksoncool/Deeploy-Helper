@@ -37,9 +37,8 @@ class Deeploy_helper_mcp {
 	// -------------------------
 	function Deeploy_helper_mcp( $switch = TRUE )
 	{
-		$this->EE =& get_instance();
-		$this->EE->lang->loadfile('admin');
-		//$this->EE->lang->loadfile('publish_ad');
+		ee()->lang->loadfile('admin');
+		//ee()->lang->loadfile('publish_ad');
 	}
 
 	// -------------------------------------------------------
@@ -47,15 +46,15 @@ class Deeploy_helper_mcp {
 	// -------------------------------------------------------
 	function get_config()
 	{
-		$this->EE->load->helper('string');
+		ee()->load->helper('string');
 
 		$settings = '';
 
 		// get site preferences and member preferences and template preferences
-		$this->EE->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
-		$this->EE->db->from('sites');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$query = $this->EE->db->get();
+		ee()->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
+		ee()->db->from('sites');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		$query = ee()->db->get();
 
 		if ($query->num_rows() > 0)
 		{
@@ -69,31 +68,31 @@ class Deeploy_helper_mcp {
 			{
 				if(in_array($name, $this->from_system_prefs))
 				{
-					$settings[$this->EE->lang->line('site_system_preferences')][$name] = $value;
+					$settings[ee()->lang->line('site_system_preferences')][$name] = $value;
 				}
 			}
 			foreach(unserialize(base64_decode($query->row('site_member_preferences'))) as $name => $value)
 			{
 				if(in_array($name, $this->from_member_prefs))
 				{
-					$settings[$this->EE->lang->line('site_member_preferences')][$name] = $value;
+					$settings[ee()->lang->line('site_member_preferences')][$name] = $value;
 				}
 			}
 			foreach(unserialize(base64_decode($query->row('site_template_preferences'))) as $name => $value)
 			{
 				if(in_array($name, $this->from_template_prefs))
 				{
-					$settings[$this->EE->lang->line('site_template_preferences')][$name] = $value;
+					$settings[ee()->lang->line('site_template_preferences')][$name] = $value;
 				}
 			}
 		}
 
 		// get channel preferences
-		$this->EE->db->select('channel_id, channel_title, channel_url, comment_url, search_results_url');
-		$this->EE->db->from('channels');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('channel_name !=', '');
-		$query = $this->EE->db->get();
+		ee()->db->select('channel_id, channel_title, channel_url, comment_url, search_results_url');
+		ee()->db->from('channels');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('channel_name !=', '');
+		$query = ee()->db->get();
 
 		if ($query->num_rows() > 0)
 		{
@@ -102,19 +101,19 @@ class Deeploy_helper_mcp {
 				foreach($query->result_array() as $row)
 				{
 					$meganame = "exp_channels::" . $row['channel_id'] . "::";
-					$settings[$row['channel_title'] . " " . $this->EE->lang->line('channel_preferences')][$meganame . 'channel_url'] = $row['channel_url'];
-					$settings[$row['channel_title'] . " " . $this->EE->lang->line('channel_preferences')][$meganame . 'comment_url'] = $row['comment_url'];
-					$settings[$row['channel_title'] . " " . $this->EE->lang->line('channel_preferences')][$meganame . 'search_results_url'] = $row['search_results_url'];
+					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'channel_url'] = $row['channel_url'];
+					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'comment_url'] = $row['comment_url'];
+					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'search_results_url'] = $row['search_results_url'];
 				}
 			}
 		}
 
 		// get upload preferences
-		$this->EE->db->select('id, name, server_path, url');
-		$this->EE->db->from('upload_prefs');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$this->EE->db->where('name !=', '');
-		$query = $this->EE->db->get();
+		ee()->db->select('id, name, server_path, url');
+		ee()->db->from('upload_prefs');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		ee()->db->where('name !=', '');
+		$query = ee()->db->get();
 
 		if ($query->num_rows() > 0)
 		{
@@ -123,21 +122,21 @@ class Deeploy_helper_mcp {
 				foreach($query->result_array() as $row)
 				{
 					$meganame = "exp_upload_prefs::" . $row['id'] . "::";
-					$settings[$this->EE->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'server_path'] = $row['server_path'];
-					$settings[$this->EE->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'url'] = $row['url'];
+					$settings[ee()->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'server_path'] = $row['server_path'];
+					$settings[ee()->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'url'] = $row['url'];
 				}
 			}
 		}
 
 		// get forum preferences
-		$verify_query = $this->EE->db->query("SHOW TABLES LIKE 'exp_forum_boards'");
+		$verify_query = ee()->db->query("SHOW TABLES LIKE 'exp_forum_boards'");
 		if ($verify_query->num_rows() > 0)
 		{
-			$this->EE->db->select('board_id, board_label, board_forum_url, board_upload_path');
-			$this->EE->db->from('forum_boards');
-			$this->EE->db->where('board_site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('board_name !=', '');
-			$query = $this->EE->db->get();
+			ee()->db->select('board_id, board_label, board_forum_url, board_upload_path');
+			ee()->db->from('forum_boards');
+			ee()->db->where('board_site_id', ee()->config->item('site_id'));
+			ee()->db->where('board_name !=', '');
+			$query = ee()->db->get();
 
 			if ($query->num_rows() > 0)
 			{
@@ -146,8 +145,8 @@ class Deeploy_helper_mcp {
 					foreach($query->result_array() as $row)
 					{
 						$meganame = "exp_forum_boards::" . $row['board_id'] . "::";
-						$settings[$this->EE->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_upload_path'] = $row['board_upload_path'];
-						$settings[$this->EE->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_forum_url'] = $row['board_forum_url'];
+						$settings[ee()->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_upload_path'] = $row['board_upload_path'];
+						$settings[ee()->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_forum_url'] = $row['board_forum_url'];
 					}
 				}
 			}
@@ -155,7 +154,7 @@ class Deeploy_helper_mcp {
 
 
 		// get Low Variable preferences
-		$query = $this->EE->db->select('settings')
+		$query = ee()->db->select('settings')
 			->where('class','Low_variables_ext')
 			->get('extensions', 1); // fetch just 1, as all should have the same value
 
@@ -191,7 +190,7 @@ class Deeploy_helper_mcp {
 				if(strpos($line, "=") !== FALSE)
 				{
 					list($name, $value) = explode("=", $line);
-					$settings[$this->EE->lang->line('config_file')][$name] = $value;
+					$settings[ee()->lang->line('config_file')][$name] = $value;
 				}
 			}
 		}
@@ -208,30 +207,30 @@ class Deeploy_helper_mcp {
 	{
 
 		// we need to replace all $DSP with helpers: form helpers, html helpers, etc.
-		$this->EE->load->helper('url');
-		$this->EE->load->helper('form');
-		$this->EE->load->library('table');
+		ee()->load->helper('url');
+		ee()->load->helper('form');
+		ee()->load->library('table');
 
 		//	html title and navigation crumblinks
 
 		// vars are available as first-class variables in our view
-		$vars['cp_page_title'] = $this->EE->lang->line('deeploy_helper_module_name');
-		$vars['cp_heading'] = $this->EE->lang->line('deeploy_helper_menu');
+		$vars['cp_page_title'] = ee()->lang->line('deeploy_helper_module_name');
+		$vars['cp_heading'] = ee()->lang->line('deeploy_helper_menu');
 
 		// message, if any
 		$vars['message'] = $msg;
 
 		// donation text
-		$vars['pitch'] = $this->EE->lang->line('pitch');
-		$vars['pitch_title'] = $this->EE->lang->line('pitch_title');
+		$vars['pitch'] = ee()->lang->line('pitch');
+		$vars['pitch_title'] = ee()->lang->line('pitch_title');
 
 		// form action
 		//$vars['form_action'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper'.AMP.'method=save';
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper'.AMP.'method=save';
 
 		// table header
-		$vars['table_heading1'] = array($this->EE->lang->line('quick_replace'),'');
-		$vars['table_heading2'] = array($this->EE->lang->line('setting_name'), $this->EE->lang->line('setting_value'));
+		$vars['table_heading1'] = array(ee()->lang->line('quick_replace'),'');
+		$vars['table_heading2'] = array(ee()->lang->line('setting_name'), ee()->lang->line('setting_value'));
 
 		$vars['table_rows'] = array();
 
@@ -243,7 +242,7 @@ class Deeploy_helper_mcp {
 			foreach($config as $meganame => $value)
 			{
 				// for now, config.php and path.php are read only.
-				if (($section == $this->EE->lang->line('config_file')) || ($section == $this->EE->lang->line('path_file')))
+				if (($section == ee()->lang->line('config_file')) || ($section == ee()->lang->line('path_file')))
 				{
 					$vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
 				}
@@ -263,7 +262,7 @@ class Deeploy_helper_mcp {
 			}
 		}
 
-		return $this->EE->load->view('settings_form', $vars, TRUE);
+		return ee()->load->view('settings_form', $vars, TRUE);
 	}
 	// end
 
@@ -272,13 +271,13 @@ class Deeploy_helper_mcp {
 	// -------------------------------------------------------
 	function save()
 	{
-		$this->EE->load->helper('string');
+		ee()->load->helper('string');
 
 		// get serialized site preferences and member preferences and template preferences
-		$this->EE->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
-		$this->EE->db->from('sites');
-		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		$query = $this->EE->db->get();
+		ee()->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
+		ee()->db->from('sites');
+		ee()->db->where('site_id', ee()->config->item('site_id'));
+		$query = ee()->db->get();
 
 		if ($query->num_rows() > 0)
 		{
@@ -297,22 +296,22 @@ class Deeploy_helper_mcp {
 			if (strpos($meganame, "::") !== FALSE)
 			{
 				list($table, $id, $name) = explode("::", $meganame);
-				$table = $this->EE->security->xss_clean($table);
-				$id = $this->EE->security->xss_clean($id);
-				$name = $this->EE->security->xss_clean($name);
-				$value = $this->EE->security->xss_clean($value);
+				$table = ee()->security->xss_clean($table);
+				$id = ee()->security->xss_clean($id);
+				$name = ee()->security->xss_clean($name);
+				$value = ee()->security->xss_clean($value);
 
 				if ($table == "exp_channels")
 				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . $this->EE->db->escape($value) . " WHERE channel_id = " . $this->EE->db->escape($id) . " AND site_id = " . $this->EE->config->item('site_id');
+					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE channel_id = " . ee()->db->escape($id) . " AND site_id = " . ee()->config->item('site_id');
 				}
 				if ($table == "exp_upload_prefs")
 				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . $this->EE->db->escape($value) . " WHERE id = " . $this->EE->db->escape($id) . " AND site_id = " . $this->EE->config->item('site_id');
+					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE id = " . ee()->db->escape($id) . " AND site_id = " . ee()->config->item('site_id');
 				}
 				if ($table == "exp_forum_boards")
 				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . $this->EE->db->escape($value) . " WHERE board_id = " . $this->EE->db->escape($id) . " AND board_site_id = " . $this->EE->config->item('site_id');
+					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE board_id = " . ee()->db->escape($id) . " AND board_site_id = " . ee()->config->item('site_id');
 				}
 			}
 
@@ -341,25 +340,25 @@ class Deeploy_helper_mcp {
 
 		if ($changed)
 		{
-			$system_prefs = base64_encode(serialize($this->EE->security->xss_clean($system_prefs)));
-			$member_prefs = base64_encode(serialize($this->EE->security->xss_clean($member_prefs)));
-			$template_prefs = base64_encode(serialize($this->EE->security->xss_clean($template_prefs)));
+			$system_prefs = base64_encode(serialize(ee()->security->xss_clean($system_prefs)));
+			$member_prefs = base64_encode(serialize(ee()->security->xss_clean($member_prefs)));
+			$template_prefs = base64_encode(serialize(ee()->security->xss_clean($template_prefs)));
 
 			// just in case we want to echo some debug output -- easier to read than base64
-			//$system_prefs = serialize($this->EE->security->xss_clean($system_prefs));
-			//$member_prefs = serialize($this->EE->security->xss_clean($member_prefs));
-			//$template_prefs = serialize($this->EE->security->xss_clean($template_prefs));
+			//$system_prefs = serialize(ee()->security->xss_clean($system_prefs));
+			//$member_prefs = serialize(ee()->security->xss_clean($member_prefs));
+			//$template_prefs = serialize(ee()->security->xss_clean($template_prefs));
 
 			$updates[] = "UPDATE exp_sites set
 				site_system_preferences = '$system_prefs',
 				site_member_preferences = '$member_prefs',
 				site_template_preferences = '$template_prefs'
-				WHERE site_id = " . $this->EE->config->item('site_id');
+				WHERE site_id = " . ee()->config->item('site_id');
 		}
 
 		if ($extension_changed)
 		{
-			$query = $this->EE->db->select('settings')
+			$query = ee()->db->select('settings')
 				->where('class','Low_variables_ext')
 				->get('extensions', 1); // fetch just 1, as all should have the same value
 
@@ -383,25 +382,25 @@ class Deeploy_helper_mcp {
 					}
 				}
 			}
-			$extension_prefs = serialize($this->EE->security->xss_clean($working_array));
+			$extension_prefs = serialize(ee()->security->xss_clean($working_array));
 
 			$data =  array(
                'settings' => $extension_prefs
             );
 
-			$query = $this->EE->db->where('class', 'Low_variables_ext')
+			$query = ee()->db->where('class', 'Low_variables_ext')
 				->update('exp_extensions', $data);
 		}
 
 		foreach ($updates as $sql)
 		{
-			$this->EE->db->query($sql);
+			ee()->db->query($sql);
 		}
 
 		//Do proper redirection + session message to inform of saved settings
-		// return $this->index($this->EE->lang->line('settings_saved'));
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('settings_saved'));
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper');
+		// return $this->index(ee()->lang->line('settings_saved'));
+		ee()->session->set_flashdata('message_success', ee()->lang->line('settings_saved'));
+		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper');
 	}
 
 
