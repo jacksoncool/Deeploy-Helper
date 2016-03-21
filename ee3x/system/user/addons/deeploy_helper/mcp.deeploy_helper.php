@@ -265,8 +265,61 @@ class Deeploy_helper_mcp {
 				}
 			}
 		}
+		
+		$vars['sections'] = array();
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/deeploy_helper/save');
+		$vars['save_btn_text'] = lang('save_btn_text');
+		$vars['save_btn_text_working'] = lang('save_btn_text_working');
+		// Generate EE3 Settings Form
+		foreach($this->get_config() as $section => $config)
+		{
+			$current_section = array();
+			// Add all fields
+			foreach($config as $meganame => $value)
+			{
+				if (($section == ee()->lang->line('config_file')) || ($section == ee()->lang->line('path_file')))
+				{
+					$vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
+				}
+				else
+				{
+					// the meganame is a compound field joined by '::'.  except when it's not, as in exp_sites.
+					if (strpos($meganame, '::') !== FALSE)
+					{
+						list($table, $id, $name) = explode('::', $meganame);
+						//$vars['table_rows'][] = array('label' => $name, 'name' => $meganame, 'value' => $value);
+						$current_section[] = array(
+							'title' => $name,
+							'desc' => 'email_notif_email_desc',
+							'fields' => array(
+								$meganame => array('type' => 'text', 'value' => $value)
+							)
+						);
+					}
+					else
+					{
+						//$vars['table_rows'][] = array('label' => $meganame, 'name' => $meganame, 'value' => $value);
+						$current_section[] = array(
+							'title' => $meganame,
+							'desc' => 'email_notif_email_desc',
+							'fields' => array(
+								$meganame => array('type' => 'text', 'value' => $value)
+							)
+						);
+					}
+				}
+			}
+			$vars['sections'][$section] = $current_section;
+		}
 
-		return ee()->load->view('settings_form', $vars, TRUE);
+		// return ee()->load->view('settings_form', $vars, TRUE);
+		return array(
+			'heading'		=> lang('site_settings'),
+			'body'			=> ee('View')->make('deeploy_helper:settings_form')->render($vars),
+			'breadcrumb'	=> array(
+				ee('CP/URL', 'addons/settings/deeploy_helper')->compile() => lang('deeploy_helper_module_name')
+			),
+		);
 	}
 	// end
 

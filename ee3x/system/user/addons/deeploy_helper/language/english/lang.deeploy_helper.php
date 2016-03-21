@@ -17,6 +17,9 @@ $lang = array(
 'deeploy_helper_menu' => 
 'Deeploy Helper', 
 
+'site_settings' =>
+'Site Settings',
+
 'setting_name' =>
 'Setting Name',
 
@@ -96,6 +99,12 @@ $lang = array(
 
 'board_forum_url' =>
 'Forum URL',
+
+'save_btn_text' =>
+'Save',
+
+'save_btn_text_working' =>
+'Saving...',
 
 // END 
 ''=>'' 
