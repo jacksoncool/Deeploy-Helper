@@ -100,6 +100,18 @@ $lang = array(
 'board_forum_url' =>
 'Forum URL',
 
+'channel_url' =>
+'Channel URL',
+
+'comment_url' =>
+'Comment form URL',
+
+'search_results_url' =>
+'Search Results URL',
+
+'server_path' =>
+'Server Path',
+
 'save_btn_text' =>
 'Save',
 

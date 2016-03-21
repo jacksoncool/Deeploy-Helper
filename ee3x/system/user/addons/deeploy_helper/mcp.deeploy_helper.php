@@ -290,7 +290,7 @@ class Deeploy_helper_mcp {
 						//$vars['table_rows'][] = array('label' => $name, 'name' => $meganame, 'value' => $value);
 						$current_section[] = array(
 							'title' => $name,
-							'desc' => 'email_notif_email_desc',
+							// 'desc' => 'email_notif_email_desc',
 							'fields' => array(
 								$meganame => array('type' => 'text', 'value' => $value)
 							)
@@ -301,7 +301,7 @@ class Deeploy_helper_mcp {
 						//$vars['table_rows'][] = array('label' => $meganame, 'name' => $meganame, 'value' => $value);
 						$current_section[] = array(
 							'title' => $meganame,
-							'desc' => 'email_notif_email_desc',
+							// 'desc' => 'email_notif_email_desc',
 							'fields' => array(
 								$meganame => array('type' => 'text', 'value' => $value)
 							)
