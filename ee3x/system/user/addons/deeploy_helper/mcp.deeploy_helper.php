@@ -50,84 +50,6 @@ class Deeploy_helper_mcp {
 
 		$settings = '';
 
-		// get site preferences and member preferences and template preferences
-		ee()->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
-		ee()->db->from('sites');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-
-			//print "Settings below: <br />";
-			//print base64_decode($query->row('site_system_preferences')) . "<br />";
-			//print base64_decode($query->row('site_member_preferences')) . "<br />";
-			//print base64_decode($query->row('site_template_preferences')) . "<br />";
-
-			foreach(unserialize(base64_decode($query->row('site_system_preferences'))) as $name => $value)
-			{
-				if(in_array($name, $this->from_system_prefs))
-				{
-					$settings[ee()->lang->line('site_system_preferences')][$name] = $value;
-				}
-			}
-			foreach(unserialize(base64_decode($query->row('site_member_preferences'))) as $name => $value)
-			{
-				if(in_array($name, $this->from_member_prefs))
-				{
-					$settings[ee()->lang->line('site_member_preferences')][$name] = $value;
-				}
-			}
-			foreach(unserialize(base64_decode($query->row('site_template_preferences'))) as $name => $value)
-			{
-				if(in_array($name, $this->from_template_prefs))
-				{
-					$settings[ee()->lang->line('site_template_preferences')][$name] = $value;
-				}
-			}
-		}
-
-		// get channel preferences
-		ee()->db->select('channel_id, channel_title, channel_url, comment_url, search_results_url');
-		ee()->db->from('channels');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('channel_name !=', '');
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			if (is_array($query->result_array()))
-			{
-				foreach($query->result_array() as $row)
-				{
-					$meganame = "exp_channels::" . $row['channel_id'] . "::";
-					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'channel_url'] = $row['channel_url'];
-					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'comment_url'] = $row['comment_url'];
-					$settings[$row['channel_title'] . " " . ee()->lang->line('channel_preferences')][$meganame . 'search_results_url'] = $row['search_results_url'];
-				}
-			}
-		}
-
-		// get upload preferences
-		ee()->db->select('id, name, server_path, url');
-		ee()->db->from('upload_prefs');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('name !=', '');
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			if (is_array($query->result_array()))
-			{
-				foreach($query->result_array() as $row)
-				{
-					$meganame = "exp_upload_prefs::" . $row['id'] . "::";
-					$settings[ee()->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'server_path'] = $row['server_path'];
-					$settings[ee()->lang->line('upload_preferences') . " (" . $row['name'] . ")"][$meganame . 'url'] = $row['url'];
-				}
-			}
-		}
-
 		// get forum preferences
 		$verify_query = ee()->db->query("SHOW TABLES LIKE 'exp_forum_boards'");
 		if ($verify_query->num_rows() > 0)
@@ -151,7 +73,58 @@ class Deeploy_helper_mcp {
 				}
 			}
 		}
+		
+		// print_r($settings);
+		
+		$settings_n = array();
+		// Get the current site Model to access its preferences
+		$site_id = ee()->config->item('site_id');
+		$site = ee('Model')->get('Site')->filter('site_id', $site_id)->all()->first();
 
+		// Get site preferences (only the ones that matters)
+		$settings_to_retrieve = array('site_url', 'theme_folder_url', 'captcha_url', 'captcha_path', 'theme_folder_path');
+		foreach ($settings_to_retrieve as $setting_name)
+		{
+			$settings_n[ee()->lang->line('site_system_preferences')][$setting_name] = $site->site_system_preferences->{$setting_name};
+		}
+		
+		// Get Members preferences
+		// Note : those are saved in 2 places : in the site settings AND as UploadDestination
+		// So when saving them, better make sure you save them on both places !
+		// Re-Note : We'll use UploadDestination to add them in our form
+		$settings_to_retrieve = array('avatar_url', 'avatar_path', 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path', 'prv_msg_upload_path', 'prv_msg_upload_path');
+		foreach ($settings_to_retrieve as $setting_name)
+		{
+			$settings_n[ee()->lang->line('site_member_preferences')][$setting_name] = $site->site_member_preferences->{$setting_name};
+		}
+		
+		// Get all channels
+		$channels = $site->Channels;
+		
+		foreach ($channels as $channel)
+		{
+			$unique_setting_name_prefix = 'channel::'.$channel->channel_id;
+			
+			$settings_n[$channel->channel_title][$unique_setting_name_prefix.'::channel_url'] = $channel->channel_url;
+			
+			$settings_n[$channel->channel_title][$unique_setting_name_prefix.'::comment_url'] = $channel->comment_url;
+			
+			$settings_n[$channel->channel_title][$unique_setting_name_prefix.'::search_results_url'] = $channel->search_results_url;
+		}
+		
+		// Get All Upload Destinations
+		$upload_destinations = $site->UploadDestinations;
+		
+		foreach ($upload_destinations as $upload_destination)
+		{
+			$unique_setting_name_prefix = 'upload_dest::'.$upload_destination->id;
+			// Server path
+			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::server_path'] = $upload_destination->server_path->path;
+			// URL
+			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::url'] = $upload_destination->url;
+		}
+		
+		//print_r($settings_n);
 
 		// get Low Variable preferences
 		$query = ee()->db->select('settings')
@@ -195,7 +168,7 @@ class Deeploy_helper_mcp {
 			}
 		}
 
-		return $settings;
+		return $settings_n;
 	}
 	// end
 
@@ -237,34 +210,6 @@ class Deeploy_helper_mcp {
 		$vars['table_heading2'] = array(ee()->lang->line('setting_name'), ee()->lang->line('setting_value'));
 
 		$vars['table_rows'] = array();
-
-		// generate table rows
-		foreach($this->get_config() as $section => $config)
-		{
-			$vars['table_rows'][] = array('section' => $section);
-
-			foreach($config as $meganame => $value)
-			{
-				// for now, config.php and path.php are read only.
-				if (($section == ee()->lang->line('config_file')) || ($section == ee()->lang->line('path_file')))
-				{
-					$vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
-				}
-				else
-				{
-					// the meganame is a compound field joined by '::'.  except when it's not, as in exp_sites.
-					if (strpos($meganame, '::') !== FALSE)
-					{
-						list($table, $id, $name) = explode('::', $meganame);
-						$vars['table_rows'][] = array('label' => $name, 'name' => $meganame, 'value' => $value);
-					}
-					else
-					{
-						$vars['table_rows'][] = array('label' => $meganame, 'name' => $meganame, 'value' => $value);
-					}
-				}
-			}
-		}
 		
 		$vars['sections'] = array();
 		$vars['base_url'] = ee('CP/URL', 'addons/settings/deeploy_helper/save');
@@ -314,7 +259,7 @@ class Deeploy_helper_mcp {
 
 		// return ee()->load->view('settings_form', $vars, TRUE);
 		return array(
-			'heading'		=> lang('site_settings'),
+			'heading'		=> lang('deeploy_helper_module_name'),
 			'body'			=> ee('View')->make('deeploy_helper:settings_form')->render($vars),
 			'breadcrumb'	=> array(
 				ee('CP/URL', 'addons/settings/deeploy_helper')->compile() => lang('deeploy_helper_module_name')
@@ -322,7 +267,7 @@ class Deeploy_helper_mcp {
 		);
 	}
 	// end
-
+	
 	// -------------------------------------------------------
 	// save settings submitted by the form.
 	// -------------------------------------------------------
@@ -330,134 +275,118 @@ class Deeploy_helper_mcp {
 	{
 		ee()->load->helper('string');
 
-		// get serialized site preferences and member preferences and template preferences
-		ee()->db->select('site_system_preferences, site_member_preferences, site_template_preferences');
-		ee()->db->from('sites');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
+		$site_id = ee()->config->item('site_id');
+		$site = ee('Model')->get('Site')->filter('site_id', $site_id)->all()->first();
+		$channels = $site->Channels;
+		$upload_destinations = $site->UploadDestinations;
+		
+		// We order them using their Id, it's easier to fetch them later on when saving the settings
+		$channels_ordered = array();
+		foreach ($channels as $channel)
 		{
-			$system_prefs = strip_slashes(unserialize(base64_decode($query->row('site_system_preferences'))));
-			$member_prefs = strip_slashes(unserialize(base64_decode($query->row('site_member_preferences'))));
-			$template_prefs = strip_slashes(unserialize(base64_decode($query->row('site_template_preferences'))));
+			$channels_ordered[$channel->channel_id] = $channel;
+		}
+		
+		$upload_destinations_ordered = array();
+		foreach ($upload_destinations as $upload_destination)
+		{
+			$upload_destinations_ordered[$upload_destination->id] = $upload_destination;
 		}
 
-		$updates = array();
-		$changed = FALSE;
-		$extension_changed = FALSE;
-
+		$site_changed = FALSE;
+		
 		foreach ($_POST as $meganame => $value)
 		{
 			// handle submissions from non-serialized tables
 			if (strpos($meganame, "::") !== FALSE)
 			{
-				list($table, $id, $name) = explode("::", $meganame);
-				$table = ee()->security->xss_clean($table);
+				list($model_type, $id, $name) = explode("::", $meganame);
+				
+				$model_type = ee()->security->xss_clean($model_type);
 				$id = ee()->security->xss_clean($id);
 				$name = ee()->security->xss_clean($name);
 				$value = ee()->security->xss_clean($value);
 
-				if ($table == "exp_channels")
+				if ($model_type == "channel")
 				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE channel_id = " . ee()->db->escape($id) . " AND site_id = " . ee()->config->item('site_id');
-				}
-				if ($table == "exp_upload_prefs")
-				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE id = " . ee()->db->escape($id) . " AND site_id = " . ee()->config->item('site_id');
-				}
-				if ($table == "exp_forum_boards")
-				{
-					$updates[] = "UPDATE `$table` SET `$name` = " . ee()->db->escape($value) . " WHERE board_id = " . ee()->db->escape($id) . " AND board_site_id = " . ee()->config->item('site_id');
-				}
-			}
-
-			// handle submissions from serialized tables
-			elseif (in_array($meganame, $this->from_system_prefs))
-			{
-				$system_prefs[$meganame] = $value;
-				$changed = TRUE;
-			}
-			elseif (in_array($meganame, $this->from_member_prefs))
-			{
-				$member_prefs[$meganame] = $value;
-				$changed = TRUE;
-			}
-			elseif (in_array($meganame, $this->from_template_prefs))
-			{
-				$template_prefs[$meganame] = $value;
-				$changed = TRUE;
-			}
-			elseif (in_array($meganame, $this->from_extension_prefs)) // for Low Variables
-			{
-				$extension_prefs[$meganame] = $value;
-				$extension_changed = TRUE;
-			}
-		}
-
-		if ($changed)
-		{
-			$system_prefs = base64_encode(serialize(ee()->security->xss_clean($system_prefs)));
-			$member_prefs = base64_encode(serialize(ee()->security->xss_clean($member_prefs)));
-			$template_prefs = base64_encode(serialize(ee()->security->xss_clean($template_prefs)));
-
-			// just in case we want to echo some debug output -- easier to read than base64
-			//$system_prefs = serialize(ee()->security->xss_clean($system_prefs));
-			//$member_prefs = serialize(ee()->security->xss_clean($member_prefs));
-			//$template_prefs = serialize(ee()->security->xss_clean($template_prefs));
-
-			$updates[] = "UPDATE exp_sites set
-				site_system_preferences = '$system_prefs',
-				site_member_preferences = '$member_prefs',
-				site_template_preferences = '$template_prefs'
-				WHERE site_id = " . ee()->config->item('site_id');
-		}
-
-		if ($extension_changed)
-		{
-			$query = ee()->db->select('settings')
-				->where('class','Low_variables_ext')
-				->get('extensions', 1); // fetch just 1, as all should have the same value
-
-			if ($query->num_rows() > 0)
-			{
-				if (is_array($query->result_array()))
-				{
-					foreach($query->result_array() as $row)
+					if (array_key_exists($id, $channels_ordered))
 					{
-						$working_array = unserialize($row['settings']);
-						if (is_array($working_array))
+						$channel = $channels_ordered[$id];
+						
+						$channel->{$name} = $value;
+						$channel->save();
+					}
+				}
+				elseif ($model_type == "upload_dest")
+				{
+					if (array_key_exists($id, $upload_destinations_ordered))
+					{
+						$upload_destination = $upload_destinations_ordered[$id];
+						
+						$upload_destination->{$name} = $value;
+						$upload_destination->save();
+						
+						// Change them in the site settings too !
+						// This has to be checked manually as there's no link between the model and the site settings...
+						// 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path'
+						if ($upload_destination->name == "Avatars" && $name == "server_path")
 						{
-							foreach($working_array as $name => &$value) // & means you can modify the original value directly
-							{
-								if($name == "file_path")
-								{
-									$value = $extension_prefs[$name];
-								}
-							}
+							$site->site_member_preferences->avatar_path = $value;
+							$site_changed = TRUE;
+						} 
+						else if ($upload_destination->name == "Avatars" && $name == "url")
+						{
+							$site->site_member_preferences->avatar_url = $value;
+							$site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "PM Attachments" && $name == "server_path")
+						{
+							$site->site_member_preferences->prv_msg_upload_path = $value;
+							$site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "PM Attachments" && $name == "url")
+						{
+							// This one doesn't actually exists in Site settings ?! Weird...
+							// $site->site_member_preferences->prv_msg_upload_url = $value;
+							// $site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "Signature Attachments" && $name == "server_path")
+						{
+							$site->site_member_preferences->sig_img_path = $value;
+							$site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "Signature Attachments" && $name == "url")
+						{
+							$site->site_member_preferences->sig_img_url = $value;
+							$site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "Member Photos" && $name == "server_path")
+						{
+							$site->site_member_preferences->photo_path = $value;
+							$site_changed = TRUE;
+						}
+						else if ($upload_destination->name == "Member Photos" && $name == "url")
+						{
+							$site->site_member_preferences->photo_url = $value;
+							$site_changed = TRUE;
 						}
 					}
 				}
+
 			}
-			$extension_prefs = serialize(ee()->security->xss_clean($working_array));
-
-			$data =  array(
-               'settings' => $extension_prefs
-            );
-
-			$query = ee()->db->where('class', 'Low_variables_ext')
-				->update('exp_extensions', $data);
 		}
-
-		foreach ($updates as $sql)
+		
+		if ($site_changed)
 		{
-			ee()->db->query($sql);
+			$site->save();
 		}
 
 		//Do proper redirection + session message to inform of saved settings
-		// return $this->index(ee()->lang->line('settings_saved'));
-		ee()->session->set_flashdata('message_success', ee()->lang->line('settings_saved'));
-		// ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=deeploy_helper');
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('settings_saved'))
+			->addToBody(lang('settings_saved_desc'))
+			->defer();
 		ee()->functions->redirect(ee('CP/URL', 'addons/settings/deeploy_helper'));
 	}
 

@@ -75,6 +75,9 @@ $lang = array(
 'From path.php (read only)',
 
 'settings_saved' =>
+'Settings saved',
+
+'settings_saved_desc' =>
 'Your new settings have been saved.',
 
 'pitch' =>
