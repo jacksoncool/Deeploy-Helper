@@ -1,11 +1,5 @@
 <div class="box">
 
-<?php // $vars members are first-class variables here ?>
-
-<?php if ($message != ''):?>
-	<p style="margin-bottom: 20px;" class="notice"><?= $message?></p>
-<?php endif;?>
-
 <h1><?=lang('quick_replace')?></h1>
 <form id="quick-replace-form" class="settings">
 	<fieldset class="col-group ">
@@ -42,8 +36,5 @@
 
 <?php $this->embed('ee:_shared/form')?>
 
-<?php if ($message != ''):?>
-	
-<?php endif;?>
 
 </div>

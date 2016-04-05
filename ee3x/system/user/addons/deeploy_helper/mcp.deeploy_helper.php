@@ -193,21 +193,9 @@ class Deeploy_helper_mcp {
 
 		// vars are available as first-class variables in our view
 		$vars['cp_page_title'] = ee()->lang->line('deeploy_helper_module_name');
-		$vars['cp_heading'] = ee()->lang->line('deeploy_helper_menu');
-
-		// message, if any
-		$vars['message'] = $msg;
-
-		// donation text
-		$vars['pitch'] = ee()->lang->line('pitch');
-		$vars['pitch_title'] = ee()->lang->line('pitch_title');
 
 		// form action
 		$vars['form_action'] = ee('CP/URL', 'addons/settings/deeploy_helper/save');
-
-		// table header
-		$vars['table_heading1'] = array(ee()->lang->line('quick_replace'),'');
-		$vars['table_heading2'] = array(ee()->lang->line('setting_name'), ee()->lang->line('setting_value'));
 
 		$vars['table_rows'] = array();
 		
@@ -224,7 +212,7 @@ class Deeploy_helper_mcp {
 			{
 				if (($section == ee()->lang->line('config_file')) || ($section == ee()->lang->line('path_file')))
 				{
-					$vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
+					// $vars['table_rows'][] = array('read_only' => TRUE, 'label' => $meganame, 'value' => $value);
 				}
 				else
 				{
