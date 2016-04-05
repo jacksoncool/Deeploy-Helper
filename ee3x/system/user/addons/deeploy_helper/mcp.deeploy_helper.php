@@ -92,11 +92,11 @@ class Deeploy_helper_mcp {
 		// Note : those are saved in 2 places : in the site settings AND as UploadDestination
 		// So when saving them, better make sure you save them on both places !
 		// Re-Note : We'll use UploadDestination to add them in our form
-		$settings_to_retrieve = array('avatar_url', 'avatar_path', 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path', 'prv_msg_upload_path', 'prv_msg_upload_path');
-		foreach ($settings_to_retrieve as $setting_name)
-		{
-			$settings_n[ee()->lang->line('site_member_preferences')][$setting_name] = $site->site_member_preferences->{$setting_name};
-		}
+		// $settings_to_retrieve = array('avatar_url', 'avatar_path', 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path', 'prv_msg_upload_path', 'prv_msg_upload_path');
+		// foreach ($settings_to_retrieve as $setting_name)
+		// {
+		// 	$settings_n[ee()->lang->line('site_member_preferences')][$setting_name] = $site->site_member_preferences->{$setting_name};
+		// }
 		
 		// Get all channels
 		$channels = $site->Channels;
@@ -373,6 +373,13 @@ class Deeploy_helper_mcp {
 					}
 				}
 
+			}
+			else
+			{
+				// We assume this is a setting from the site settings
+				$site->site_system_preferences->{$meganame} = $value;
+				
+				$site_changed = TRUE;
 			}
 		}
 		
