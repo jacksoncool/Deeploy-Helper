@@ -7,9 +7,12 @@ $(document).ready(function(){
 	$('.promotion').change(function(){
 		$(this).css('color', 'red');
 	});
-
-	$('#quick-replace-form').on('submit', function(e){
-		$('form input').each(function(){
+	
+	// We place our event on the button click to override EE default events
+	$('#quick_replace').on('click', function(e){
+		// We need to be sure to get the right form
+		// Unfortunately, we can't add an id to it, so using a trick here
+		$('input[name="site_url"]').parents('form').find('input[type="text"]').each(function(){
 			var old = $(this).val();
 			$(this).val($(this).val().replace($('#find').val(), $('#replace').val()));
 			if ($(this).val() != old)
@@ -17,6 +20,7 @@ $(document).ready(function(){
 				$(this).change();
 			}
 		});
+		return false;
 		e.preventDefault();
 	});
 });
