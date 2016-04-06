@@ -49,34 +49,8 @@ class Deeploy_helper_mcp {
 		ee()->load->helper('string');
 
 		$settings = '';
-
-		// get forum preferences
-		$verify_query = ee()->db->query("SHOW TABLES LIKE 'exp_forum_boards'");
-		if ($verify_query->num_rows() > 0)
-		{
-			ee()->db->select('board_id, board_label, board_forum_url, board_upload_path');
-			ee()->db->from('forum_boards');
-			ee()->db->where('board_site_id', ee()->config->item('site_id'));
-			ee()->db->where('board_name !=', '');
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				if (is_array($query->result_array()))
-				{
-					foreach($query->result_array() as $row)
-					{
-						$meganame = "exp_forum_boards::" . $row['board_id'] . "::";
-						$settings[ee()->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_upload_path'] = $row['board_upload_path'];
-						$settings[ee()->lang->line('forum_preferences') . " (" . $row['board_label'] . ")"][$meganame . 'board_forum_url'] = $row['board_forum_url'];
-					}
-				}
-			}
-		}
-		
-		// print_r($settings);
-		
 		$settings_n = array();
+		
 		// Get the current site Model to access its preferences
 		$site_id = ee()->config->item('site_id');
 		$site = ee('Model')->get('Site')->filter('site_id', $site_id)->all()->first();
@@ -114,7 +88,6 @@ class Deeploy_helper_mcp {
 		
 		// Get All Upload Destinations
 		$upload_destinations = $site->UploadDestinations;
-		
 		foreach ($upload_destinations as $upload_destination)
 		{
 			$unique_setting_name_prefix = 'upload_dest::'.$upload_destination->id;
@@ -122,6 +95,19 @@ class Deeploy_helper_mcp {
 			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::server_path'] = $upload_destination->server_path->path;
 			// URL
 			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::url'] = $upload_destination->url;
+		}
+		
+		// Get Forums preferences
+		// Settings : board_forum_url, board_forum_trigger, board_upload_path
+		$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
+		foreach ($boards as $board)
+		{
+			$unique_setting_name_prefix = 'board::'.$board->board_id;
+			// Board forum URL
+			$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_forum_url'] = $board->board_forum_url;
+			
+			// Board Upload Path
+			$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_upload_path'] = $board->board_upload_path;
 		}
 		
 		//print_r($settings_n);
@@ -196,8 +182,6 @@ class Deeploy_helper_mcp {
 
 		// form action
 		$vars['form_action'] = ee('CP/URL', 'addons/settings/deeploy_helper/save');
-
-		$vars['table_rows'] = array();
 		
 		$vars['sections'] = array();
 		$vars['base_url'] = ee('CP/URL', 'addons/settings/deeploy_helper/save');
@@ -267,6 +251,7 @@ class Deeploy_helper_mcp {
 		$site = ee('Model')->get('Site')->filter('site_id', $site_id)->all()->first();
 		$channels = $site->Channels;
 		$upload_destinations = $site->UploadDestinations;
+		$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
 		
 		// We order them using their Id, it's easier to fetch them later on when saving the settings
 		$channels_ordered = array();
@@ -279,6 +264,12 @@ class Deeploy_helper_mcp {
 		foreach ($upload_destinations as $upload_destination)
 		{
 			$upload_destinations_ordered[$upload_destination->id] = $upload_destination;
+		}
+		
+		$boards_ordered = array();
+		foreach ($boards as $board)
+		{
+			$boards_ordered[$board->board_id] = $board;
 		}
 
 		$site_changed = FALSE;
@@ -358,6 +349,16 @@ class Deeploy_helper_mcp {
 							$site->site_member_preferences->photo_url = $value;
 							$site_changed = TRUE;
 						}
+					}
+				}
+				else if ($model_type == "board")
+				{
+					if (array_key_exists($id, $boards_ordered))
+					{
+						$board = $boards_ordered[$id];
+						
+						$board->{$name} = $value;
+						$board->save();
 					}
 				}
 
