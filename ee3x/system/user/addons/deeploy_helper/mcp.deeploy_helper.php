@@ -27,11 +27,6 @@ class Deeploy_helper_mcp {
 
 	var $version	= DEEPLOY_HELPER_VERSION;
 
-	var $from_system_prefs = array('captcha_path', 'captcha_url', 'emoticon_path', 'theme_folder_path', 'theme_folder_url', 'site_url');
-	var $from_member_prefs = array('avatar_path', 'avatar_url', 'photo_url', 'photo_path', 'sig_img_url', 'sig_img_path', 'prv_msg_upload_path');
-	var $from_template_prefs = array('tmpl_file_basepath');
-	var $from_extension_prefs = array('file_path');  // for Low Variables currently
-
 	// -------------------------
 	//	constructor
 	// -------------------------
