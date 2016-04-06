@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
 	$('form input').change(function(){
-		$(this).css('color', '#red');
+		$(this).css('color', 'red');
 	});
 
 	$('.promotion').change(function(){
-		$(this).css('color', '#red');
+		$(this).css('color', 'red');
 	});
 
 	$('#quick-replace-form').on('submit', function(e){
