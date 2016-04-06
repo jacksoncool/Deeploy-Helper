@@ -21,6 +21,5 @@ $(document).ready(function(){
 			}
 		});
 		return false;
-		e.preventDefault();
 	});
 });
