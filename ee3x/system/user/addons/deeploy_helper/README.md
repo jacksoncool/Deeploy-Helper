@@ -15,6 +15,11 @@ After installing Deeploy Helper, navigate to its page from the “Modules” tab
 - The current version of Deeploy Helper does not test the validity of input parameters.  For example, it does not verify that filesystem paths exist and are writeable.  You did read the bullet point above, right?
 
 
+## Support
+
+Having issues ? Found a bug ? Suggestions ? Contact us at [tech@hopstudios.com](mailto:tech@hopstudios.com)
+
+
 ## Changelog
 
 ### 2.2.0
