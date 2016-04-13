@@ -276,10 +276,10 @@ class Deeploy_helper_mcp {
 			{
 				list($model_type, $id, $name) = explode("::", $meganame);
 				
-				$model_type = ee()->security->xss_clean($model_type);
-				$id = ee()->security->xss_clean($id);
-				$name = ee()->security->xss_clean($name);
-				$value = ee()->security->xss_clean($value);
+				$model_type = ee('Security/XSS')->clean($model_type);
+				$id = ee('Security/XSS')->clean($id);
+				$name = ee('Security/XSS')->clean($name);
+				$value = ee('Security/XSS')->clean($value);
 
 				if ($model_type == "channel")
 				{
