@@ -30,7 +30,7 @@ class Deeploy_helper_mcp {
 	// -------------------------
 	//	constructor
 	// -------------------------
-	function Deeploy_helper_mcp( $switch = TRUE )
+	function __construct( $switch = TRUE )
 	{
 		ee()->lang->loadfile('admin');
 		//ee()->lang->loadfile('publish_ad');
@@ -107,6 +107,7 @@ class Deeploy_helper_mcp {
 		
 		//print_r($settings_n);
 
+		// TODO : Convert that to models (will not be used for now)
 		// get Low Variable preferences
 		$query = ee()->db->select('settings')
 			->where('class','Low_variables_ext')
