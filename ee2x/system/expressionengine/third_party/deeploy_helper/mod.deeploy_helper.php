@@ -25,7 +25,7 @@
 
 class Deeploy_helper { 
 	/* this file does nothing, but with style */
-  function Deeploy_helper()
+  function __construct()
 	{
 	}
 }

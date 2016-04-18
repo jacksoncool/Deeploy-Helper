@@ -33,12 +33,6 @@ class Deeploy_helper_upd {
 
 var $version = DEEPLOY_HELPER_VERSION;
 
-	function Deeploy_helper_upd()
-	{
-		
-	}
-
-
 	// ---------------------------------------- 
 	//	Module installer 
 	// ---------------------------------------- 

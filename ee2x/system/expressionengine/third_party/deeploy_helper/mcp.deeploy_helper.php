@@ -35,7 +35,7 @@ class Deeploy_helper_mcp {
 	// -------------------------
 	//	constructor
 	// -------------------------
-	function Deeploy_helper_mcp( $switch = TRUE )
+	function __construct( $switch = TRUE )
 	{
 		ee()->lang->loadfile('admin');
 		//ee()->lang->loadfile('publish_ad');
