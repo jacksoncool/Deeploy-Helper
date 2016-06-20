@@ -8,8 +8,8 @@
 	http://ellislab.com/
 ==========================================================
 	THIS IS COPYRIGHTED SOFTWARE, All RIGHTS RESERVED.
-	Written by: Travis Smith and Justin Crawdford
-	Copyright (c) 2014 Hop Studios
+	Written by: Travis Smith and Justin Crawford
+	Copyright (c) 2016 Hop Studios
 	http://www.hopstudios.com/software/
 --------------------------------------------------------
 	Please do not distribute this software without written
