@@ -1,4 +1,4 @@
-Deploy Helper for Expression Engine
+Deeploy Helper for Expression Engine
 ===================================
 
 Deeploy Helper is a simple module to make our lives as EE developers just a little easier. It collects many of the configuration parameters we most frequently modify on one page, where power users can modify them all at once.  Are you an EE developer who wouldn’t mind a few extra minutes in your day?  Maybe Deeploy Helper can help!
