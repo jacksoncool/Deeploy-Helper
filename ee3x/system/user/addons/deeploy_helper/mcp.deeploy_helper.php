@@ -92,18 +92,23 @@ class Deeploy_helper_mcp {
 			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::url'] = $upload_destination->url;
 		}
 		
-		// Get Forums preferences
+		// Get Forums preferences if installed
 		// Settings : board_forum_url, board_forum_trigger, board_upload_path
-		$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
-		foreach ($boards as $board)
+		$query_forum = ee()->db->select('*')->from('modules')->where('module_name', 'Forum')->get();
+		if ($query_forum->num_rows() > 0)
 		{
-			$unique_setting_name_prefix = 'board::'.$board->board_id;
-			// Board forum URL
-			$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_forum_url'] = $board->board_forum_url;
-			
-			// Board Upload Path
-			$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_upload_path'] = $board->board_upload_path;
+			$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
+			foreach ($boards as $board)
+			{
+				$unique_setting_name_prefix = 'board::'.$board->board_id;
+				// Board forum URL
+				$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_forum_url'] = $board->board_forum_url;
+				
+				// Board Upload Path
+				$settings_n[ee()->lang->line('forum_preferences') . ' ('.$board->board_label.')'][$unique_setting_name_prefix.'::board_upload_path'] = $board->board_upload_path;
+			}
 		}
+		
 		
 		//print_r($settings_n);
 
@@ -133,7 +138,6 @@ class Deeploy_helper_mcp {
 				}
 			}
 		}
-
 
 		// get config.php
 		//$config_file = getcwd() . "/config.php";
