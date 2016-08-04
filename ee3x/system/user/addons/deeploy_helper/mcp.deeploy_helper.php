@@ -86,8 +86,19 @@ class Deeploy_helper_mcp {
 		foreach ($upload_destinations as $upload_destination)
 		{
 			$unique_setting_name_prefix = 'upload_dest::'.$upload_destination->id;
-			// Server path
-			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::server_path'] = $upload_destination->server_path->path;
+
+			// A change occured in EE 3.4.0
+			if (version_compare(APP_VER, '3.4.0') >= 0)
+			{
+				// Server path
+				$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::server_path'] = $upload_destination->server_path;
+			}
+			else
+			{
+				// Server path
+				$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::server_path'] = $upload_destination->server_path->path;
+			}
+
 			// URL
 			$settings_n[ee()->lang->line('upload_preferences') . " (" . $upload_destination->name . ")"][$unique_setting_name_prefix.'::url'] = $upload_destination->url;
 		}
