@@ -4,6 +4,8 @@ Deeploy Helper is a simple module to make our lives as EE developers just a litt
 
 **Please note: This is a very powerful tool.** It works in our tests, and it’s worked for many other EE developers who have downloaded it. But because it directly updates system settings tables in your EE database, this tool has the potential to damage your installation.  We encourage its use on well-backed-up systems.
 
+**EE 3 Special File Upload Preferences** File Upload Preferences (Default Avatars), File Upload Preferences (Member Photos) and File Upload Preferences (Signature Attachments) are not changeable directly in EE. However, we want to offer you the possibility to change them if ever needed but please be careful when changing those.
+
 ## Usage
 
 After installing Deeploy Helper, navigate to its page from the “Modules” tab.  You’ll see a long list of configuration parameters, many of which you can modify.  Click “Update Settings” after making changes.

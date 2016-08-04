@@ -7,6 +7,8 @@ Deeploy Helper is compatible with EE 2.8+. It probably also works with 2.7 all t
 
 **Please note: This is a very powerful tool.** It works in our tests, and it’s worked for many other EE developers who have downloaded it. But because it directly updates system settings tables in your EE database, this tool has the potential to damage your installation.  We encourage its use on well-backed-up systems.
 
+**EE 3 Special File Upload Preferences** File Upload Preferences (Default Avatars), File Upload Preferences (Member Photos) and File Upload Preferences (Signature Attachments) are not changeable directly in EE. However, we want to offer you the possibility to change them if ever needed but please be careful when changing those.
+
 If you want to use it, [please buy it](https://devot-ee.com/add-ons/deeploy-helper). :)
 
 [More information, how to use...](ee3x/system/user/addons/deeploy_helper/README.md)
