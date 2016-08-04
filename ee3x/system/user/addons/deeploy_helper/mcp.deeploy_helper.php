@@ -251,7 +251,13 @@ class Deeploy_helper_mcp {
 		$site = ee('Model')->get('Site')->filter('site_id', $site_id)->all()->first();
 		$channels = $site->Channels;
 		$upload_destinations = $site->UploadDestinations;
-		$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
+
+		$boards = NULL;
+		$query_forum = ee()->db->select('*')->from('modules')->where('module_name', 'Forum')->get();
+		if ($query_forum->num_rows() > 0)
+		{
+			$boards = ee('Model')->get('forum:Board')->filter('board_site_id', $site_id)->all();
+		}
 		
 		// We order them using their Id, it's easier to fetch them later on when saving the settings
 		$channels_ordered = array();
@@ -267,10 +273,14 @@ class Deeploy_helper_mcp {
 		}
 		
 		$boards_ordered = array();
-		foreach ($boards as $board)
+		if ($boards)
 		{
-			$boards_ordered[$board->board_id] = $board;
+			foreach ($boards as $board)
+			{
+				$boards_ordered[$board->board_id] = $board;
+			}
 		}
+		
 
 		$site_changed = FALSE;
 		

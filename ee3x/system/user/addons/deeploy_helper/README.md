@@ -22,6 +22,10 @@ Having issues ? Found a bug ? Suggestions ? Contact us at [tech@hopstudios.com](
 
 ## Changelog
 
+### 3.0.2
+
+Fix other issue when Discussion Forum module wasn't installed in EE 3
+
 ### 3.0.1
 
 Fix issue when Discussion Forum module wasn't installed in EE 3
