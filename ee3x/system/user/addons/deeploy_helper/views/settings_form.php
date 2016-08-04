@@ -1,7 +1,7 @@
 <div class="box">
 
 <h1><?=lang('quick_replace')?></h1>
-<form id="quick-replace-form" class="settings">
+<div id="quick-replace-form" class="settings">
 	<fieldset class="col-group ">
 		<div class="setting-txt col  w-8">
 			<h3><?=lang('current_document_root')?></h3>
@@ -32,7 +32,7 @@
 	<fieldset class="form-ctrls ">
 		<input name="quick_replace" value="Quick Replace" id="quick_replace" class="btn submit" type="submit">
 	</fieldset>
-</form>
+</div>
 
 <?php $this->embed('ee:_shared/form')?>
 
